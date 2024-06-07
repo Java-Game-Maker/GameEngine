@@ -8,6 +8,7 @@ namespace GameEngine
 	public class Engine
 	{
 		private static IWindow _window;
+		private static IInputContext input;
 
 		public Engine()
 		{
@@ -30,6 +31,11 @@ namespace GameEngine
 
 		private void OnLoad()
 		{
+			input = _window.CreateInput();
+			for(int i = 0; i < input.Keyboards.Count; i++)
+			{
+				input.Keyboards[i].KeyDown += KeyDown;
+			}
 		}
 
 		private void OnRender(double deltaTime)
@@ -51,6 +57,14 @@ namespace GameEngine
 
 		public void Shutdown()
 		{
+		}
+
+		private static void KeyDown(IKeyboard keyboard, Key key, int keyCode)
+		{
+			if(key == Key.Escape)
+			{
+				_window.Close();
+			}
 		}
 	}
 }
