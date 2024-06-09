@@ -87,6 +87,8 @@ namespace GameEngine
 			shader.SetUniform("view", view);
 			shader.SetUniform("projection", projection);
 
+			shader.SetUniform("timeElapsed", (float)Time.TimeElapsed);
+
 			gl.BindVertexArray(vertexArray);
 			unsafe
 			{

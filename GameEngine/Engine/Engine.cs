@@ -8,6 +8,7 @@ namespace GameEngine
 	public class Engine
 	{
 		private Window window;
+		public InputHandler inputHandler;
 		private Renderer renderer;
 		private Camera camera;
 		private bool running;
@@ -30,20 +31,27 @@ namespace GameEngine
 		private void OnLoad()
 		{
 			renderer.Initialize(window.GLContext);
+			inputHandler = new InputHandler(window.inputContext);
 
 			var input = window.inputContext;
 			var mouse = input.Mice[0];
-			camera.Initialize(mouse);
+			camera.Initialize(mouse, inputHandler);
+			inputHandler.Initialize();
 		}
 
 		private void OnRender(double deltaTime)
 		{
+			Time.DeltaTime = deltaTime;
+
 			float aspectRatio = (float)window.WindowInstance.Size.X / (float)window.WindowInstance.Size.Y;
 			renderer.Render(aspectRatio);
 		}
 
 		private void OnUpdate(double deltaTime)
 		{
+			Time.DeltaTime = deltaTime;
+			Time.TimeElapsed += deltaTime;
+			inputHandler.Update();
 			camera.ProcessInput(window.inputContext, (float)deltaTime);
 		}
 

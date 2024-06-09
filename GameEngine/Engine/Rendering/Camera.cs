@@ -37,10 +37,21 @@ namespace GameEngine
 			UpdateCameraVectors();
 		}
 
-		public void Initialize(IMouse mouse)
+		public void Initialize(IMouse mouse, InputHandler inputHandler)
 		{
 			this.mouse = mouse;
 			this.mouse.MouseMove += OnMouseMove;
+
+			float velocity(double td) => (Speed * (float)td);
+			
+			InputState editor_state = new InputState();
+			editor_state.Bind_OnKeyHeld.Add(Key.W		 , () => {Position += Front * velocity(Time.DeltaTime);});
+			editor_state.Bind_OnKeyHeld.Add(Key.S		 , () => {Position -= Front * velocity(Time.DeltaTime);});
+			editor_state.Bind_OnKeyHeld.Add(Key.A		 , () => {Position -= Right * velocity(Time.DeltaTime);});
+			editor_state.Bind_OnKeyHeld.Add(Key.D		 , () => {Position += Right * velocity(Time.DeltaTime);});
+			editor_state.Bind_OnKeyHeld.Add(Key.ShiftLeft, () => {Position -= Up * 	  velocity(Time.DeltaTime);});
+			editor_state.Bind_OnKeyHeld.Add(Key.Space	 , () => {Position += Up * 	  velocity(Time.DeltaTime);});
+			inputHandler.inputStates.Add(editor_state);
 		}
 
 		private void OnMouseMove(IMouse mouse, Vector2 position)
@@ -90,22 +101,6 @@ namespace GameEngine
 
 		public void ProcessInput(IInputContext input, float deltaTime)
 		{
-			var keyboard = input.Keyboards[0];
-			float velocity = Speed * deltaTime;
-
-			if (keyboard.IsKeyPressed(Key.W))
-				Position += Front * velocity;
-			if (keyboard.IsKeyPressed(Key.S))
-				Position -= Front * velocity;
-			if (keyboard.IsKeyPressed(Key.A))
-				Position -= Right * velocity;
-			if (keyboard.IsKeyPressed(Key.D))
-				Position += Right * velocity;
-			if (keyboard.IsKeyPressed(Key.Q))
-				Position -= Up * velocity;
-			if (keyboard.IsKeyPressed(Key.E))
-				Position += Up * velocity;
-
 			UpdateCameraVectors();
 		}
 

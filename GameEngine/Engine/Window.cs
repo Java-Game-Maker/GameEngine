@@ -5,25 +5,42 @@ using System.Windows;
 
 namespace GameEngine
 {
+	public class WindowSettings
+	{
+		public string title { get; set; }
+		public Silk.NET.Maths.Vector2D<int> size { get; set; }
+		public WindowState windowState { get; set; }
+		public WindowBorder windowBorder { get; set; }
+
+		public void SyncSettings(IWindow _window)
+		{
+			_window.Title = title;
+			_window.Size = size;
+			_window.WindowState = windowState;
+			_window.WindowBorder = windowBorder;
+		}
+	}
+
 	public class Window
 	{
 		public IWindow WindowInstance {get; private set;}
 		public GL GLContext {get; private set;}
 		public IInputContext inputContext;
+		public WindowSettings windowSettings;
 
 		public void Initialize()
 		{
 			var options = WindowOptions.Default;
-			options.Title = "GameEngine";
-			options.Size = new Silk.NET.Maths.Vector2D<int>(1920, 1080);
-			options.WindowState = WindowState.Fullscreen;
-			options.WindowBorder = WindowBorder.Hidden;
+			windowSettings = new WindowSettings();
+			windowSettings.title = "GameEngine";
+			windowSettings.size = new Silk.NET.Maths.Vector2D<int>(1920, 1080);
+			windowSettings.windowState = WindowState.Fullscreen;
+			windowSettings.windowBorder = WindowBorder.Hidden;
 
 			WindowInstance = Silk.NET.Windowing.Window.Create(options);
 			WindowInstance.Load += OnLoad;
 			WindowInstance.Closing += OnClosing;
-
-			WindowInstance.WindowState = WindowState.Fullscreen;
+			windowSettings.SyncSettings(WindowInstance);
 		}
 
 		private void OnLoad()
@@ -33,7 +50,7 @@ namespace GameEngine
 			GLContext = GL.GetApi(WindowInstance);
 		}
 
-		private void OnClosing()
+        private void OnClosing()
 		{
 			inputContext.Dispose();
 		}
