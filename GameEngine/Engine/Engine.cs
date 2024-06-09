@@ -7,43 +7,44 @@ namespace GameEngine
 {
 	public class Engine
 	{
-		private static IWindow _window;
-		private static IInputContext input;
+		private Window window;
+		private Renderer renderer;
+		private Camera camera;
+		private bool running;
 
 		public Engine()
 		{
+			window = new Window();
+			camera = new Camera(new System.Numerics.Vector3(0.0f, 0.0f, 3.0f));
+			renderer = new Renderer(camera);
 		}
 
 		public void Initialize()
 		{
-			WindowOptions options = WindowOptions.Default with
-			{
-				Size = new Vector2D<int>(800, 600),
-				Title = "GameEngine"
-			};
-			_window = Window.Create(options);
-
-			_window.Load += OnLoad;
-			_window.Render += OnRender;
-			_window.Update += OnUpdate;
-			_window.Closing += OnClosing;
+			window.Initialize();
+			window.WindowInstance.Load += OnLoad;
+			window.WindowInstance.Render += OnRender;
+			window.WindowInstance.Update += OnUpdate;
 		}
 
 		private void OnLoad()
 		{
-			input = _window.CreateInput();
-			for(int i = 0; i < input.Keyboards.Count; i++)
-			{
-				input.Keyboards[i].KeyDown += KeyDown;
-			}
+			renderer.Initialize(window.GLContext);
+
+			var input = window.inputContext;
+			var mouse = input.Mice[0];
+			camera.Initialize(mouse);
 		}
 
 		private void OnRender(double deltaTime)
 		{
+			float aspectRatio = (float)window.WindowInstance.Size.X / (float)window.WindowInstance.Size.Y;
+			renderer.Render(aspectRatio);
 		}
 
 		private void OnUpdate(double deltaTime)
 		{
+			camera.ProcessInput(window.inputContext, (float)deltaTime);
 		}
 
 		private void OnClosing()
@@ -52,19 +53,11 @@ namespace GameEngine
 
 		public void Run()
 		{
-			_window.Run();
+			window.Run();
 		}
 
 		public void Shutdown()
 		{
-		}
-
-		private static void KeyDown(IKeyboard keyboard, Key key, int keyCode)
-		{
-			if(key == Key.Escape)
-			{
-				_window.Close();
-			}
 		}
 	}
 }
