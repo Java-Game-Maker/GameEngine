@@ -1,4 +1,3 @@
-
 using Silk.NET.OpenGL;
 
 namespace GameEngine
@@ -17,5 +16,10 @@ namespace GameEngine
 
 		private readonly Dictionary<string, MeshComponent> objects = new Dictionary<string, MeshComponent>();
 		private readonly Dictionary<string, ShaderComponent> shaders = new Dictionary<string, ShaderComponent>();
+
+		public ResourceManager(GL _gl)
+		{
+			gl = _gl;
+		}
 	}
 }

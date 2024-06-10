@@ -99,7 +99,7 @@ namespace GameEngine
 			var shaderComponent = new ShaderComponent(shaderProgram);
 			var meshTransformComponent = new TransformComponent
 			{
-				Position = new Vector3D<float>(0.0f, 0.0f, 0.0f),
+				Position = new Vector3D<float>(-5.0f, 0.0f, 0.0f),
 				Rotation = new Vector3D<float>(0.0f, 0.0f, 0.0f),
 				Scale = new Vector3D<float>(1.0f, 1.0f, 1.0f)
 			};
@@ -114,16 +114,16 @@ namespace GameEngine
 
 			var meshEntity2 = entityManager.CreateEntity();
 
-			var mesh2Component = new MeshComponent(vertices, indices);
+			var mesh2Component = RM_Obj.LoadOBJ("./week2.obj");
 			var shader2Component = new ShaderComponent(shaderProgram);
 			var mesh2TransformComponent = new TransformComponent
 			{
 				Position = new Vector3D<float>(5.0f, 0.0f, 0.0f),
-				Rotation = new Vector3D<float>(0.0f, 45.0f, 0.0f),
+				Rotation = new Vector3D<float>(0.0f, 0.0f, 0.0f),
 				Scale = new Vector3D<float>(1.0f, 1.0f, 1.0f)
 			};
 
-			entityManager.AddComponent(meshEntity2, meshComponent);
+			entityManager.AddComponent(meshEntity2, mesh2Component);
 			entityManager.AddComponent(meshEntity2, shader2Component);
 			entityManager.AddComponent(meshEntity2, mesh2TransformComponent);
 
@@ -172,15 +172,6 @@ namespace GameEngine
 				{
 					system.Update(entityManager);
 				}
-			}
-
-			var meshs = entityManager.GetAllEntitiesWithComponent<MeshComponent>();
-			foreach (var mesh in meshs)
-			{
-				var _transform = entityManager.GetComponent<TransformComponent>(mesh);
-				float _y =  _transform.Rotation.Y;
-				_y += 1.5f * (float)Time.DeltaTime;
-				_transform.Rotation = new Vector3D<float>(0, _y, 0);
 			}
 
 			inputHandler.Update();
