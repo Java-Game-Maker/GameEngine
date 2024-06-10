@@ -42,17 +42,50 @@ namespace GameEngine
 
 			gl.UseProgram(shaderProgram);
 
-			gl.UniformMatrix4(gl.GetUniformLocation(shaderProgram, "view"), 1, false, viewMatrix.ToFloatArray());
-			gl.UniformMatrix4(gl.GetUniformLocation(shaderProgram, "projection"), 1, false, projectionMatrix.ToFloatArray());
+			int viewLocation = gl.GetUniformLocation(shaderProgram, "view");
+			int projectionLocation = gl.GetUniformLocation(shaderProgram, "projection");
+			int modelLocation = gl.GetUniformLocation(shaderProgram, "model");
+
+			if (viewLocation == -1 || projectionLocation == -1 || modelLocation == -1)
+			{
+				Console.WriteLine("Error: Unable to get uniform location");
+				CheckForErrors();
+				return;
+			}
+
+			gl.UniformMatrix4(viewLocation, 1, false, viewMatrix.ToFloatArray());
+			gl.UniformMatrix4(projectionLocation, 1, false, projectionMatrix.ToFloatArray());
 
 			Matrix4X4<float> modelMatrix = CalculateModelMatrix(transform);
-			var modelLocation = gl.GetUniformLocation(shaderProgram, "model");
 			gl.UniformMatrix4(modelLocation, 1, false, modelMatrix.ToFloatArray());
 
-			meshSystem.BindMesh(mesh);
+			gl.BindVertexArray(mesh.VAO);
+
+			var error = gl.GetError();
+			if (error != GLEnum.NoError)
+			{
+				Console.WriteLine($"OpenGL Error before DrawElements: {error}");
+			}
 
 			gl.DrawElements(GLEnum.Triangles, (uint)mesh.IndexCount, GLEnum.UnsignedInt, null);
+
+			error = gl.GetError();
+			if (error != GLEnum.NoError)
+			{
+				Console.WriteLine($"OpenGL Error after DrawElements: {error}");
+			}
+
+			gl.BindVertexArray(0);
 			gl.UseProgram(0);
+		}
+
+		private void CheckForErrors()
+		{
+			var error = gl.GetError();
+			if (error != GLEnum.NoError)
+			{
+				Console.WriteLine($"OpenGL Error: {error}");
+			}
 		}
 
 		private Matrix4X4<float> CalculateModelMatrix(TransformComponent transform)

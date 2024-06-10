@@ -14,21 +14,36 @@ namespace GameEngine
 
 		public unsafe void BindMesh(MeshComponent mesh)
 		{
-			gl.BindVertexArray(mesh.VAO);
-			gl.BindBuffer(GLEnum.ArrayBuffer, mesh.VBO);
-			gl.BindBuffer(GLEnum.ElementArrayBuffer, mesh.EBO);
+			mesh.VAO = gl.GenVertexArray();
+			mesh.VBO = gl.GenBuffer();
+			mesh.EBO = gl.GenBuffer();
 
-			gl.EnableVertexAttribArray(0); // pos
-			gl.VertexAttribPointer(0, 3, GLEnum.Float, false, sizeof(float) * 8, (void*)0);
-			gl.EnableVertexAttribArray(1); // norm
-			gl.VertexAttribPointer(1, 3, GLEnum.Float, false, sizeof(float) * 8, (void*)(sizeof(float) * 3));
-			gl.EnableVertexAttribArray(2); // TexCoord
-			gl.VertexAttribPointer(2, 2, GLEnum.Float, false, sizeof(float) * 8, (void*)(sizeof(float) * 6));
+			gl.BindVertexArray(mesh.VAO);
+
+			gl.BindBuffer(GLEnum.ArrayBuffer, mesh.VBO);
+			fixed (float* v = &mesh.vertices[0])
+			{
+				gl.BufferData(GLEnum.ArrayBuffer, (uint)(mesh.vertices.Length * sizeof(float)), v, GLEnum.StaticDraw);
+			}
+
+			gl.BindBuffer(GLEnum.ElementArrayBuffer, mesh.EBO);
+			fixed (uint* i = &mesh.indices[0])
+			{
+				gl.BufferData(GLEnum.ElementArrayBuffer, (nuint)(mesh.indices.Length * sizeof(uint)), i, GLEnum.StaticDraw);
+			}
+
+			gl.EnableVertexAttribArray(0); // position
+			gl.VertexAttribPointer(0, 3, GLEnum.Float, false, sizeof(float) * 6, (void*)0);
+			gl.EnableVertexAttribArray(1); // color
+			gl.VertexAttribPointer(1, 3, GLEnum.Float, false, sizeof(float) * 6, (void*)(sizeof(float) * 3));
+
+			gl.BindVertexArray(0);
+
+			Console.WriteLine($"VAO: {mesh.VAO}, VBO: {mesh.VBO}, EBO: {mesh.EBO}");
 		}
 
 		public override void Update(EntityManager entityManager)
 		{
-			throw new NotImplementedException();
 		}
 	}
 }

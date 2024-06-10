@@ -6,29 +6,6 @@ using System.Linq;
 
 namespace GameEngine
 {
-    public class InputState
-    {
-        public Dictionary<Key, Action> Bind_OnKeyDown = new Dictionary<Key, Action>();
-        public Dictionary<Key, Action> Bind_OnKeyHeld = new Dictionary<Key, Action>();
-        public Dictionary<Key, Action> Bind_OnMouseDown = new Dictionary<Key, Action>();
-
-        public void OnKeyDown(IKeyboard keyboard, Key key, int arg3)
-        {
-            if (Bind_OnKeyDown.ContainsKey(key))
-            {
-                Bind_OnKeyDown[key].Invoke();
-            }
-        }
-
-        public void OnKeyHeld(Key key)
-        {
-            if (Bind_OnKeyHeld.ContainsKey(key))
-            {
-                Bind_OnKeyHeld[key].Invoke();
-            }
-        }
-    }
-
     public class InputHandler
     {
         public IInputContext inputContext;
@@ -39,6 +16,7 @@ namespace GameEngine
         public List<InputState> inputStates = new List<InputState>();
 
         private Dictionary<Key, bool> keyStates = new Dictionary<Key, bool>();
+        private Dictionary<MouseButton, bool> mouseButtonStates = new Dictionary<MouseButton, bool>();
 
         public InputHandler(IInputContext _inputContext)
         {
@@ -52,6 +30,11 @@ namespace GameEngine
             keyboard.KeyDown += inputStates[activeState].OnKeyDown;
             keyboard.KeyUp += OnKeyUp;
             keyboard.KeyDown += OnKeyDown;
+
+            mouse.MouseDown += inputStates[activeState].OnMouseDown;
+            mouse.MouseUp += OnMouseUp;
+            mouse.MouseDown += OnMouseDown;
+            mouse.MouseMove += inputStates[activeState].OnMouseMove;
         }
 
         private void OnKeyDown(IKeyboard keyboard, Key key, int arg3)
@@ -64,11 +47,26 @@ namespace GameEngine
             keyStates[key] = false;
         }
 
+        private void OnMouseDown(IMouse mouse, MouseButton button)
+        {
+            mouseButtonStates[button] = true;
+        }
+
+        private void OnMouseUp(IMouse mouse, MouseButton button)
+        {
+            mouseButtonStates[button] = false;
+        }
+
         public void Update()
         {
             foreach (var keyState in keyStates.Where(k => k.Value))
             {
                 inputStates[activeState].OnKeyHeld(keyState.Key);
+            }
+
+            foreach (var mouseButtonState in mouseButtonStates.Where(m => m.Value))
+            {
+                inputStates[activeState].OnMouseHeld(mouseButtonState.Key);
             }
         }
     }
