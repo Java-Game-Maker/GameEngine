@@ -13,6 +13,9 @@ namespace GameEngine
 		private Camera camera;
 		private bool running;
 
+		private EntityManager entityManager;
+		private List<EntitySystem> systems;
+
 		public Engine()
 		{
 			window = new Window();
