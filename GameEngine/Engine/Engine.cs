@@ -6,56 +6,59 @@ using Silk.NET.OpenGL;
 
 namespace GameEngine
 {
-    public class Engine
-    {
-        private Window window;
+	public class Engine
+	{
+		private Window window;
 
-        private EntityManager entityManager;
-        private List<EntitySystem> systems;
-        private ShaderManager shaderManager;
-        private CameraSystem cameraSystem;
-        private MeshSystem meshSystem;
-        private RenderingSystem renderingSystem;
+		private EntityManager entityManager;
+		private List<EntitySystem> systems;
+		private ShaderManager shaderManager;
+		private CameraSystem cameraSystem;
+		private MeshSystem meshSystem;
+		private RenderingSystem renderingSystem;
 
-        public InputHandler inputHandler;
+		public InputHandler inputHandler;
 
-        public Engine()
-        {
-            window = new Window();
-        }
+		public Engine()
+		{
+			window = new Window();
+		}
 
-        public void Initialize()
-        {
-            window.Initialize();
-            window.WindowInstance.Load += OnLoad;
-            window.WindowInstance.Render += OnRender;
-            window.WindowInstance.Update += OnUpdate;
-            window.WindowInstance.Closing += OnClosing;
-        }
+		public void Initialize()
+		{
+			window.Initialize();
+			window.WindowInstance.Load += OnLoad;
+			window.WindowInstance.Render += OnRender;
+			window.WindowInstance.Update += OnUpdate;
+			window.WindowInstance.Closing += OnClosing;
+		}
 
-        private void OnLoad()
-        {
-            var gl = window.GLContext;
-            gl.ClearColor(0.45f, 0.85f, 1.0f, 1.0f);
+		private void OnLoad()
+		{
+			var gl = window.GLContext;
+			gl.ClearColor(0.45f, 0.85f, 1.0f, 1.0f);
 
-            shaderManager = new ShaderManager(gl);
-            entityManager = new EntityManager();
-            cameraSystem = new CameraSystem();
-            meshSystem = new MeshSystem(gl);
-            renderingSystem = new RenderingSystem(gl, shaderManager, cameraSystem, meshSystem);
+			gl.Enable(GLEnum.DepthTest);
+			gl.DepthFunc(GLEnum.Less);
 
-            systems = new List<EntitySystem> {
-                cameraSystem,
-                meshSystem,
-                renderingSystem
-            };
+			shaderManager = new ShaderManager(gl);
+			entityManager = new EntityManager();
+			cameraSystem = new CameraSystem();
+			meshSystem = new MeshSystem(gl);
+			renderingSystem = new RenderingSystem(gl, shaderManager, cameraSystem, meshSystem);
 
-            inputHandler = new InputHandler(window.inputContext);
-            InitializeEntities();
-            inputHandler.Initialize();
-        }
+			systems = new List<EntitySystem> {
+				cameraSystem,
+				meshSystem,
+				renderingSystem
+			};
 
-        private void InitializeEntities()
+			inputHandler = new InputHandler(window.inputContext);
+			InitializeEntities();
+			inputHandler.Initialize();
+		}
+
+		private void InitializeEntities()
 		{
 			Console.WriteLine("InitializeEntities called");
 
@@ -116,7 +119,7 @@ namespace GameEngine
 			var mesh2TransformComponent = new TransformComponent
 			{
 				Position = new Vector3D<float>(5.0f, 0.0f, 0.0f),
-				Rotation = new Vector3D<float>(0.0f, 0.0f, 0.0f),
+				Rotation = new Vector3D<float>(0.0f, 45.0f, 0.0f),
 				Scale = new Vector3D<float>(1.0f, 1.0f, 1.0f)
 			};
 
@@ -129,7 +132,7 @@ namespace GameEngine
 			Console.WriteLine("Mesh bound");
 		}
 
-        private void OnRender(double deltaTime)
+		private void OnRender(double deltaTime)
 		{
 			Console.WriteLine("OnRender called");
 			var gl = window.GLContext;
@@ -158,33 +161,42 @@ namespace GameEngine
 			}
 		}
 
-        private void OnUpdate(double deltaTime)
-        {
-            Time.DeltaTime = deltaTime;
-            Time.TimeElapsed += deltaTime;
+		private void OnUpdate(double deltaTime)
+		{
+			Time.DeltaTime = deltaTime;
+			Time.TimeElapsed += deltaTime;
 
-            foreach (var system in systems)
-            {
-                if (!(system is RenderingSystem))
-                {
-                    system.Update(entityManager);
-                }
-            }
+			foreach (var system in systems)
+			{
+				if (!(system is RenderingSystem))
+				{
+					system.Update(entityManager);
+				}
+			}
 
-            inputHandler.Update();
-        }
+			var meshs = entityManager.GetAllEntitiesWithComponent<MeshComponent>();
+			foreach (var mesh in meshs)
+			{
+				var _transform = entityManager.GetComponent<TransformComponent>(mesh);
+				float _y =  _transform.Rotation.Y;
+				_y += 1.5f * (float)Time.DeltaTime;
+				_transform.Rotation = new Vector3D<float>(0, _y, 0);
+			}
 
-        private void OnClosing()
-        {
-        }
+			inputHandler.Update();
+		}
 
-        public void Run()
-        {
-            window.Run();
-        }
+		private void OnClosing()
+		{
+		}
 
-        public void Shutdown()
-        {
-        }
-    }
+		public void Run()
+		{
+			window.Run();
+		}
+
+		public void Shutdown()
+		{
+		}
+	}
 }
