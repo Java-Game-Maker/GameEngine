@@ -85,10 +85,10 @@ namespace GameEngine
 
 			float[] vertices = {
 				// positions          // colors
-				0.5f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
-				0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,
-				-0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,
-				-0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 0.0f
+				0.5f,  0.5f, 0.0f,
+				0.5f, -0.5f, 0.0f,
+				-0.5f, -0.5f, 0.0f,
+				-0.5f,  0.5f, 0.0f,
 			};
 			uint[] indices = {
 				0, 1, 3,
@@ -96,10 +96,11 @@ namespace GameEngine
 			};
 
 			var meshComponent = new MeshComponent(vertices, indices);
+			meshComponent.Normals = meshComponent.CalculateNormals(meshComponent.vertices, meshComponent.indices);
 			var shaderComponent = new ShaderComponent(shaderProgram);
 			var meshTransformComponent = new TransformComponent
 			{
-				Position = new Vector3D<float>(-5.0f, 0.0f, 0.0f),
+				Position = new Vector3D<float>(-10.0f, 0.0f, 0.0f),
 				Rotation = new Vector3D<float>(0.0f, 0.0f, 0.0f),
 				Scale = new Vector3D<float>(1.0f, 1.0f, 1.0f)
 			};
@@ -118,7 +119,7 @@ namespace GameEngine
 			var shader2Component = new ShaderComponent(shaderProgram);
 			var mesh2TransformComponent = new TransformComponent
 			{
-				Position = new Vector3D<float>(5.0f, 0.0f, 0.0f),
+				Position = new Vector3D<float>(0.0f, 0.0f, 0.0f),
 				Rotation = new Vector3D<float>(0.0f, 0.0f, 0.0f),
 				Scale = new Vector3D<float>(1.0f, 1.0f, 1.0f)
 			};

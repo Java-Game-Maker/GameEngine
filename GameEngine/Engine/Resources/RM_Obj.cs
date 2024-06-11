@@ -21,6 +21,7 @@ namespace GameEngine
 			var mesh = scene.Meshes[0];
 			var vertices = new List<float>();
 			var indices = new List<uint>();
+			var normals = new List<float>();
 
 			for (int i = 0; i < mesh.Vertices.Count; i++)
 			{
@@ -29,9 +30,9 @@ namespace GameEngine
 				vertices.Add(vertex.Y);
 				vertices.Add(vertex.Z);
 
+				/* vertices.Add(1.0f);
 				vertices.Add(1.0f);
-				vertices.Add(1.0f);
-				vertices.Add(1.0f);
+				vertices.Add(1.0f); */
 			}
 
 			foreach (var face in mesh.Faces)
@@ -53,7 +54,16 @@ namespace GameEngine
 				throw new Exception("The indices reference a vertex that does not exist.");
 			}
 
-			return new MeshComponent(vertices.ToArray(), indices.ToArray());
+			foreach(var normal in mesh.Normals)
+			{
+				normals.Add(normal.X);
+				normals.Add(normal.Y);
+				normals.Add(normal.Z);
+			}
+
+			MeshComponent to_return = new MeshComponent(vertices.ToArray(), indices.ToArray());
+			to_return.Normals = normals.ToArray();
+			return to_return;
 		}
 	}
 }

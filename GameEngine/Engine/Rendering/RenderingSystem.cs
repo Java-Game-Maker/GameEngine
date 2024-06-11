@@ -36,6 +36,25 @@ namespace GameEngine
 			}
 		}
 
+		public Vector3D<float> CalculateLightDirection(float timeOfDay)
+		{
+			// Normalize time of day to be between 0 and 1
+			float normalizedTime = timeOfDay / 24.0f;
+
+			// Calculate the azimuth angle (0 to 2 * PI)
+			float azimuthAngle = normalizedTime * MathF.PI * 2.0f;
+
+			// Calculate the elevation angle (e.g., sun rises and sets at the horizon)
+			float elevationAngle = MathF.PI / 4.0f * MathF.Sin(normalizedTime * MathF.PI);
+
+			// Convert spherical coordinates to Cartesian coordinates
+			float x = MathF.Cos(elevationAngle) * MathF.Cos(azimuthAngle);
+			float y = MathF.Sin(elevationAngle);
+			float z = MathF.Cos(elevationAngle) * MathF.Sin(azimuthAngle);
+
+			return new Vector3D<float>(x, y, z);
+		}
+
 		private unsafe void RenderEntity(TransformComponent transform, MeshComponent mesh, ShaderComponent shaderComponent, Matrix4X4<float> viewMatrix, Matrix4X4<float> projectionMatrix)
 		{
 			var shaderProgram = shaderComponent.ShaderProgramId;
@@ -46,18 +65,18 @@ namespace GameEngine
 			int projectionLocation = gl.GetUniformLocation(shaderProgram, "projection");
 			int modelLocation = gl.GetUniformLocation(shaderProgram, "model");
 
-			int lightPosLocation = gl.GetUniformLocation(shaderProgram, "lightPos");
+			int lightDirLocation = gl.GetUniformLocation(shaderProgram, "lightDir");
 			int viewPosLocation = gl.GetUniformLocation(shaderProgram, "viewPos");
 			int lightColorLocation = gl.GetUniformLocation(shaderProgram, "lightColor");
 			int objectColorLocation = gl.GetUniformLocation(shaderProgram, "objectColor");
 
 			if (viewLocation == -1 || projectionLocation == -1 || modelLocation == -1 ||
-                lightPosLocation == -1 || viewPosLocation == -1 || lightColorLocation == -1 || objectColorLocation == -1)
-            {
-                Console.WriteLine("Error: Unable to get uniform location");
-                CheckForErrors();
-                return;
-            }
+				lightDirLocation == -1 || viewPosLocation == -1 || lightColorLocation == -1 || objectColorLocation == -1)
+			{
+				Console.WriteLine("Error: Unable to get uniform location");
+				CheckForErrors();
+				return;
+			}
 
 			gl.UniformMatrix4(viewLocation, 1, false, viewMatrix.ToFloatArray());
 			gl.UniformMatrix4(projectionLocation, 1, false, projectionMatrix.ToFloatArray());
@@ -65,15 +84,15 @@ namespace GameEngine
 			Matrix4X4<float> modelMatrix = CalculateModelMatrix(transform);
 			gl.UniformMatrix4(modelLocation, 1, false, modelMatrix.ToFloatArray());
 
-			var lightPos = new Vector3D<float>(1.2f, 1.0f, 2.0f);
-            var viewPos = new Vector3D<float>(0.0f, 0.0f, 3.0f);
-            var lightColor = new Vector3D<float>(1.0f, 1.0f, 1.0f);
-            var objectColor = new Vector3D<float>(0.8f, 0.5f, 0.31f);
+			var lightDir = CalculateLightDirection((float)(Time.TimeElapsed));
+			var viewPos = new Vector3D<float>(0.0f, 0.0f, 3.0f);
+			var lightColor = new Vector3D<float>(1.0f, 1.0f, 1.0f);
+			var objectColor = new Vector3D<float>(1.0f, 0.5f, 0.31f);
 
-            gl.Uniform3(lightPosLocation, lightPos.X, lightPos.Y, lightPos.Z);
-            gl.Uniform3(viewPosLocation, viewPos.X, viewPos.Y, viewPos.Z);
-            gl.Uniform3(lightColorLocation, lightColor.X, lightColor.Y, lightColor.Z);
-            gl.Uniform3(objectColorLocation, objectColor.X, objectColor.Y, objectColor.Z);
+			gl.Uniform3(lightDirLocation, lightDir.X, lightDir.Y, lightDir.Z);
+			gl.Uniform3(viewPosLocation, viewPos.X, viewPos.Y, viewPos.Z);
+			gl.Uniform3(lightColorLocation, lightColor.X, lightColor.Y, lightColor.Z);
+			gl.Uniform3(objectColorLocation, objectColor.X, objectColor.Y, objectColor.Z);
 
 			gl.BindVertexArray(mesh.VAO);
 
