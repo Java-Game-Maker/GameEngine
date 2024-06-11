@@ -82,25 +82,11 @@ namespace GameEngine
 			Console.WriteLine($"Shader program created: {shaderProgram}");
 
 			var meshEntity = entityManager.CreateEntity();
-
-			float[] vertices = {
-				// positions          // colors
-				0.5f,  0.5f, 0.0f,
-				0.5f, -0.5f, 0.0f,
-				-0.5f, -0.5f, 0.0f,
-				-0.5f,  0.5f, 0.0f,
-			};
-			uint[] indices = {
-				0, 1, 3,
-				1, 2, 3
-			};
-
-			var meshComponent = new MeshComponent(vertices, indices);
-			meshComponent.Normals = meshComponent.CalculateNormals(meshComponent.vertices, meshComponent.indices);
+			var meshComponent = RM_Obj.LoadOBJ("./week2.obj");
 			var shaderComponent = new ShaderComponent(shaderProgram);
 			var meshTransformComponent = new TransformComponent
 			{
-				Position = new Vector3D<float>(-10.0f, 0.0f, 0.0f),
+				Position = new Vector3D<float>(-5.0f, 0.0f, 0.0f),
 				Rotation = new Vector3D<float>(0.0f, 0.0f, 0.0f),
 				Scale = new Vector3D<float>(1.0f, 1.0f, 1.0f)
 			};
@@ -115,7 +101,7 @@ namespace GameEngine
 
 			var meshEntity2 = entityManager.CreateEntity();
 
-			var mesh2Component = RM_Obj.LoadOBJ("./week2.obj");
+			var mesh2Component = RM_Obj.LoadOBJ("./cube.obj");
 			var shader2Component = new ShaderComponent(shaderProgram);
 			var mesh2TransformComponent = new TransformComponent
 			{

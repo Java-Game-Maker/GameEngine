@@ -10,6 +10,13 @@ namespace GameEngine
 		Obj
 	}
 
+	public enum ResourceState
+	{
+		Detached,
+		Loading,
+		Loaded
+	}
+
 	public class ResourceManager
 	{
 		private readonly GL gl;

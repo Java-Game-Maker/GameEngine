@@ -6,7 +6,7 @@ using Assimp.Configs;
 
 namespace GameEngine
 {
-	public class RM_Obj
+	public class RM_Obj : Resource
 	{
 		public static MeshComponent LoadOBJ(string path)
 		{
