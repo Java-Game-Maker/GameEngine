@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using Silk.NET.OpenGL;
-using FreeImageAPI;
+using StbImageSharp;
 using System;
 
 namespace GameEngine
@@ -14,12 +14,6 @@ namespace GameEngine
 		Obj
 	}
 
-	public enum ResourceState
-	{
-		Detached,
-		Loading,
-		Loaded
-	}
 
 	public class ResourceManager
 	{
@@ -38,13 +32,19 @@ namespace GameEngine
 
 		private unsafe Texture LoadTexture(string path)
 		{
-			var image = RM_Texture.LoadImage(path);
+			ImageResult image;
+			using(Stream stream = File.OpenRead(path))
+			{
+				image = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
+			}
+			
 			if(image == null)
 			{
 				throw new Exception("Failed to load texture: " + path);
 			}
 
 			uint textureId = gl.GenTexture();
+			gl.ActiveTexture(TextureUnit.Texture0);
 			gl.BindTexture(TextureTarget.Texture2D, textureId);
 
 			fixed(byte* pData = image.Data)
@@ -117,6 +117,50 @@ namespace GameEngine
 		}
 
 		public MeshComponent Get_Model(string name) => models[name];
+
+		/* Import Shader */
+
+		public void Import_Shader(ShaderManager shaderManager, string name, string vertexPath, string fragmentPath)
+		{
+			if(!shaders.ContainsKey(name))
+			{
+				string vertexShader = File.ReadAllText(vertexPath);
+				string fragmentShader = File.ReadAllText(fragmentPath);
+
+				uint shaderProgram = shaderManager.CreateShaderProgram(vertexShader, fragmentShader);
+				shaders.Add(name, new ShaderComponent(shaderProgram));
+			}else{Console.WriteLine($"Failed to import shader. Name: {name}, is already booked by another shader.");}
+		}
+
+		public void Detach_Shader(string name)
+		{
+			if(shaders.ContainsKey(name))
+			{
+				gl.DeleteProgram(shaders[name].ShaderProgramId);
+				shaders.Remove(name);
+			}
+		}
+
+		public ShaderComponent Get_Shader(string name) => shaders[name];
+
+		/* Unload all */
+		public void Detach_All()
+		{
+			foreach (string textureName in textures.Keys)
+			{
+				Detach_Texture(textureName);
+			}
+
+			foreach (string modelName in models.Keys)
+			{
+				Detach_Model(modelName);
+			}
+
+			foreach (string shaderName in shaders.Keys)
+			{
+				Detach_Shader(shaderName);
+			}
+		}
 
 	}
 }

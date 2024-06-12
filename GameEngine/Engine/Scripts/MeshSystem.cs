@@ -18,6 +18,7 @@ namespace GameEngine
 			mesh.VBO = gl.GenBuffer();
 			mesh.EBO = gl.GenBuffer();
 			mesh.NBO = gl.GenBuffer();
+			mesh.UVBO = gl.GenBuffer();
 
 			gl.BindVertexArray(mesh.VAO);
 
@@ -42,6 +43,13 @@ namespace GameEngine
 				gl.BufferData(GLEnum.ArrayBuffer, (nuint)(mesh.Normals.Length * sizeof(float)), n, GLEnum.StaticDraw);
 			}
 
+			// UVs
+			gl.BindBuffer(GLEnum.ArrayBuffer, mesh.UVBO);
+			fixed (float* uv = &mesh.UVs[0])
+			{
+				gl.BufferData(GLEnum.ArrayBuffer, (nuint)(mesh.UVs.Length * sizeof(float)), uv, GLEnum.StaticDraw);
+			}
+
 			// Position attribute
 			gl.EnableVertexAttribArray(0);
 			gl.BindBuffer(GLEnum.ArrayBuffer, mesh.VBO);
@@ -51,6 +59,11 @@ namespace GameEngine
 			gl.EnableVertexAttribArray(1);
 			gl.BindBuffer(GLEnum.ArrayBuffer, mesh.NBO);
 			gl.VertexAttribPointer(1, 3, GLEnum.Float, false, 3 * sizeof(float), (void*)0);
+
+			// UV attribute
+			gl.EnableVertexAttribArray(2);
+			gl.BindBuffer(GLEnum.ArrayBuffer, mesh.UVBO);
+			gl.VertexAttribPointer(2, 2, GLEnum.Float, false, 2 * sizeof(float), (void*)0);
 
 			gl.BindVertexArray(0);
 

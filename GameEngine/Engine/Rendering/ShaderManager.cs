@@ -6,7 +6,6 @@ namespace GameEngine
 	public class ShaderManager
 	{
 		private GL gl;
-		private Dictionary<string, uint> shaderPrograms = new Dictionary<string, uint>();
 
 		public ShaderManager(GL _gl)
 		{
@@ -50,14 +49,5 @@ namespace GameEngine
 			return shader;
 		}
 
-		public uint GetShaderProgram(string _name)
-		{
-			return shaderPrograms[_name];
-		}
-
-		public void AddShaderProgram(string _name, uint _shaderProgramId)
-		{
-			shaderPrograms[_name] = _shaderProgramId;
-		}
 	}
 }

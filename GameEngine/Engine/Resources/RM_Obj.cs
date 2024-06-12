@@ -22,6 +22,7 @@ namespace GameEngine
 			var vertices = new List<float>();
 			var indices = new List<uint>();
 			var normals = new List<float>();
+			var uvs = new List<float>();
 
 			for (int i = 0; i < mesh.Vertices.Count; i++)
 			{
@@ -29,6 +30,12 @@ namespace GameEngine
 				vertices.Add(vertex.X);
 				vertices.Add(vertex.Y);
 				vertices.Add(vertex.Z);
+			}
+
+			foreach (var uv in mesh.TextureCoordinateChannels[0])
+			{
+				uvs.Add(uv.X);
+				uvs.Add(uv.Y);
 			}
 
 			foreach (var face in mesh.Faces)
@@ -59,6 +66,7 @@ namespace GameEngine
 
 			MeshComponent to_return = new MeshComponent(vertices.ToArray(), indices.ToArray());
 			to_return.Normals = normals.ToArray();
+			to_return.UVs = uvs.ToArray();
 			return to_return;
 		}
 	}

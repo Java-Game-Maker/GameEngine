@@ -9,11 +9,13 @@ namespace GameEngine
 		public float[] vertices { get; set; }
 		public uint[] indices { get; set; }
 		public float[] Normals { get; set; }
+		public float[] UVs { get; set; }
 
 		public uint VAO { get; set; }
 		public uint VBO { get; set; }
 		public uint EBO { get; set; }
 		public uint NBO { get; set; }
+		public uint UVBO { get; set; }
 		public uint IndexCount { get; set; }
 
 		public MeshComponent(float[] _vertices, uint[] _indices)

@@ -1,6 +1,5 @@
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
-using FreeImageAPI;
 using System;
 
 
@@ -8,7 +7,7 @@ namespace GameEngine
 {
 	public class RM_Texture
 	{
-		public static unsafe ImageData LoadImage(string path)
+		/* public static unsafe ImageData LoadImage(string path)
 		{
 			FIBITMAP dib = FreeImage.Load(FREE_IMAGE_FORMAT.FIF_UNKNOWN, path, FREE_IMAGE_LOAD_FLAGS.DEFAULT);
 			if(dib.IsNull)
@@ -27,6 +26,6 @@ namespace GameEngine
 			FreeImage.Unload(converted);
 
 			return new ImageData((int)width, (int)height, data);
-		}
+		} */
 	}
 }

@@ -16,6 +16,7 @@ namespace GameEngine
 		private CameraSystem cameraSystem;
 		private MeshSystem meshSystem;
 		private RenderingSystem renderingSystem;
+		private ResourceManager resourceManager;
 
 		public InputHandler inputHandler;
 
@@ -46,6 +47,7 @@ namespace GameEngine
 			cameraSystem = new CameraSystem();
 			meshSystem = new MeshSystem(gl);
 			renderingSystem = new RenderingSystem(gl, shaderManager, cameraSystem, meshSystem);
+			resourceManager = new ResourceManager(gl);
 
 			systems = new List<EntitySystem> {
 				cameraSystem,
@@ -67,7 +69,8 @@ namespace GameEngine
 			var transformComponent = new TransformComponent
 			{
 				Position = new Vector3D<float>(0.0f, 0.0f, 3.0f),
-				Rotation = new Vector3D<float>(0.0f, 0.0f, 0.0f)
+				Rotation = new Vector3D<float>(0.0f),
+				Scale = new Vector3D<float>(1.0f)
 			};
 
 			cameraComponent.InitInput(transformComponent);
@@ -76,45 +79,19 @@ namespace GameEngine
 			entityManager.AddComponent(cameraEntity, cameraComponent);
 			entityManager.AddComponent(cameraEntity, transformComponent);
 
-			string vertexShaderSource = File.ReadAllText("./Shaders/vertex.glsl");
-			string fragmentShaderSource = File.ReadAllText("./Shaders/fragment.glsl");
-			uint shaderProgram = shaderManager.CreateShaderProgram(vertexShaderSource, fragmentShaderSource);
-			Console.WriteLine($"Shader program created: {shaderProgram}");
+			resourceManager.Import_Shader(shaderManager, "standardShader", "./Shaders/vertex.glsl", "./Shaders/fragment.glsl");
+			resourceManager.Import_Texture("minecraft_dirt", "./Assets/minecraft_dirt.png");
 
-			var meshEntity = entityManager.CreateEntity();
-			var meshComponent = RM_Obj.LoadOBJ("./week2.obj");
-			var shaderComponent = new ShaderComponent(shaderProgram);
-			var meshTransformComponent = new TransformComponent
-			{
-				Position = new Vector3D<float>(-5.0f, 0.0f, 0.0f),
-				Rotation = new Vector3D<float>(0.0f, 0.0f, 0.0f),
-				Scale = new Vector3D<float>(1.0f, 1.0f, 1.0f)
-			};
+			int location = window.GLContext.GetUniformLocation(resourceManager.Get_Shader("standardShader").ShaderProgramId, "texture1");
+			window.GLContext.Uniform1(location, resourceManager.Get_Texture("minecraft_dirt").Id);
 
-			entityManager.AddComponent(meshEntity, meshComponent);
-			entityManager.AddComponent(meshEntity, shaderComponent);
-			entityManager.AddComponent(meshEntity, meshTransformComponent);
+			GameObject go1 = new GameObject(resourceManager, entityManager, resourceManager.Get_Shader("standardShader"), "./cube.obj", "cube2");
+			GameObject go2 = new GameObject(resourceManager, entityManager, resourceManager.Get_Shader("standardShader"), "./cube.obj", "cube");
+			go2.transformComponent.Position = new Vector3D<float>(3.0f, 0.0f, 0.0f);
+			go2.transformComponent.Scale = new Vector3D<float>(0.5f, 0.5f, 0.5f);
 
-			meshSystem.BindMesh(meshComponent);
-
-			// NEW MESH //
-
-			var meshEntity2 = entityManager.CreateEntity();
-
-			var mesh2Component = RM_Obj.LoadOBJ("./cube.obj");
-			var shader2Component = new ShaderComponent(shaderProgram);
-			var mesh2TransformComponent = new TransformComponent
-			{
-				Position = new Vector3D<float>(0.0f, 0.0f, 0.0f),
-				Rotation = new Vector3D<float>(0.0f, 0.0f, 0.0f),
-				Scale = new Vector3D<float>(1.0f, 1.0f, 1.0f)
-			};
-
-			entityManager.AddComponent(meshEntity2, mesh2Component);
-			entityManager.AddComponent(meshEntity2, shader2Component);
-			entityManager.AddComponent(meshEntity2, mesh2TransformComponent);
-
-			meshSystem.BindMesh(mesh2Component);
+			meshSystem.BindMesh(go1.meshComponent);
+			meshSystem.BindMesh(go2.meshComponent);
 
 			Console.WriteLine("Mesh bound");
 		}
@@ -166,6 +143,7 @@ namespace GameEngine
 
 		private void OnClosing()
 		{
+			resourceManager.Detach_All();
 		}
 
 		public void Run()
