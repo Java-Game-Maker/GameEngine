@@ -7,6 +7,8 @@ namespace GameEngine
 		public ResourceType resourceType { get; set; }
 		public ResourceState resourceState { get; set; }
 
-		public void Detach(){}
+		public virtual void Detach(ResourceManager resourceManager)
+		{
+		}
 	}
 }

@@ -21,10 +21,6 @@ namespace GameEngine
 			vertices = _vertices;
 			indices = _indices;
 			IndexCount = (uint)_indices.Length;
-			/* VAO = vao;
-			VBO = vbo;
-			EBO = ebo;
-			IndexCount = indexCount; */
 		}
 
 		public float[] CalculateNormals(float[] vertices, uint[] indices)

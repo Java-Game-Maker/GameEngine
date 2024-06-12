@@ -6,7 +6,7 @@ using Assimp.Configs;
 
 namespace GameEngine
 {
-	public class RM_Obj : Resource
+	public class RM_Obj
 	{
 		public static MeshComponent LoadOBJ(string path)
 		{
@@ -29,10 +29,6 @@ namespace GameEngine
 				vertices.Add(vertex.X);
 				vertices.Add(vertex.Y);
 				vertices.Add(vertex.Z);
-
-				/* vertices.Add(1.0f);
-				vertices.Add(1.0f);
-				vertices.Add(1.0f); */
 			}
 
 			foreach (var face in mesh.Faces)

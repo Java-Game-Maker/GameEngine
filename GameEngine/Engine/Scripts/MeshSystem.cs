@@ -57,6 +57,33 @@ namespace GameEngine
 			Console.WriteLine($"VAO: {mesh.VAO}, VBO: {mesh.VBO}, EBO: {mesh.EBO}, NBO: {mesh.NBO}");
 		}
 
+		public void DetachMesh(MeshComponent mesh)
+		{
+			if(mesh.VAO != 0)
+			{
+				gl.DeleteVertexArray(mesh.VAO);
+				mesh.VAO = 0;
+			}
+
+			if(mesh.VBO != 0)
+			{
+				gl.DeleteBuffer(mesh.VBO);
+				mesh.VBO = 0;
+			}
+
+			if(mesh.EBO != 0)
+			{
+				gl.DeleteBuffer(mesh.EBO);
+				mesh.EBO = 0;
+			}
+
+			if(mesh.NBO != 0)
+			{
+				gl.DeleteBuffer(mesh.NBO);
+				mesh.NBO = 0;
+			}
+		}
+
 		public override void Update(EntityManager entityManager)
 		{
 		}
