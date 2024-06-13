@@ -28,21 +28,15 @@ namespace GameEngine
 
 		private void RegisterFunctions()
 		{
-			_lua["entityManager"] = Managers.entityManager;
-			_lua["DeltaTime"] = (float)Time.DeltaTime;
-			_lua.RegisterFunction("registerOnLoad", this, GetType().GetMethod("RegisterOnLoad"));
-			_lua.RegisterFunction("registerUpdate", this, GetType().GetMethod("RegisterUpdate"));
-
-			_lua.RegisterFunction("_createEntity", this, GetType().GetMethod("CreateEntity"));
-			_lua.RegisterFunction("_addComponent", this, GetType().GetMethod("AddComponent"));
-			_lua.RegisterFunction("_updateTransform", this, GetType().GetMethod("UpdateTransform"));
-		}
-
-		public void UpdateTransform(int _id, float x, float y, float z)
-		{
-			var entity = new Entity{ Id = _id };
-			var transform = Managers.entityManager.GetComponent<TransformComponent>(entity);
-			transform.Position = new Vector3D<float>(x, y, z);
+			_lua.NewTable("Managers");
+			_lua.GetTable("Managers")["ShaderManager"]		= Managers.shaderManager;
+			_lua.GetTable("Managers")["MeshSystem"] 		= Managers.meshSystem;
+			_lua.GetTable("Managers")["TransformSystem"]	= Managers.transformSystem;
+			_lua.GetTable("Managers")["CameraSystem"]		= Managers.cameraSystem;
+			_lua.GetTable("Managers")["EntityManager"]		= Managers.entityManager;
+			_lua.GetTable("Managers")["RenderingSystem"]	= Managers.renderingSystem;
+			_lua.GetTable("Managers")["ResourceManager"]	= Managers.resourceManager;
+			_lua.GetTable("Managers")["InputHandler"]		= Managers.inputHandler;
 		}
 
 		private void LoadStandardLibrary()

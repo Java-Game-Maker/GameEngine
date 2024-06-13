@@ -61,20 +61,20 @@ namespace GameEngine
 
 		public void OnLoad()
 		{
-			List<Entity> luaComponents = GetAllEntitiesWithComponent<ScriptLuaComponent>();
-			foreach (var luaComp in luaComponents)
+			List<Entity> pyComponents = GetAllEntitiesWithComponent<ScriptPythonComponent>();
+			foreach (var pyComp in pyComponents)
 			{
-				ScriptLuaComponent scl = GetComponent<ScriptLuaComponent>(luaComp);
+				ScriptPythonComponent scl = GetComponent<ScriptPythonComponent>(pyComp);
 				scl.OnLoad();
 			}
 		}
 
 		public void Update()
 		{
-			List<Entity> luaComponents = GetAllEntitiesWithComponent<ScriptLuaComponent>();
-			foreach (var luaComp in luaComponents)
+			List<Entity> pyComponents = GetAllEntitiesWithComponent<ScriptPythonComponent>();
+			foreach (var pyComp in pyComponents)
 			{
-				ScriptLuaComponent scl = GetComponent<ScriptLuaComponent>(luaComp);
+				ScriptPythonComponent scl = GetComponent<ScriptPythonComponent>(pyComp);
 				scl.Update();
 			}
 		}

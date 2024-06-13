@@ -39,6 +39,7 @@ namespace GameEngine
 			Managers.meshSystem = new MeshSystem(gl);
 			Managers.renderingSystem = new RenderingSystem(gl);
 			Managers.resourceManager = new ResourceManager(gl);
+			Managers._GL = window.GLContext;
 
 			systems = new List<EntitySystem> {
 				Managers.cameraSystem,
@@ -49,46 +50,13 @@ namespace GameEngine
 			Managers.inputHandler = new InputHandler(window.inputContext);
 			
 			var scriptEntity = Managers.entityManager.CreateEntity();
-			Managers.resourceManager.Import_Script("test", Utils.FromAssets("./Scripts/Camera.lua"));
-			Managers.entityManager.AddComponent(scriptEntity, Managers.resourceManager.Get_Script("test"));
+			Managers.resourceManager.Import_PyScript("main", "./PyScripts/Main.py");
+			Managers.entityManager.AddComponent(scriptEntity, Managers.resourceManager.Get_PyScript("main"));
+
+			Managers.resourceManager.Get_PyScript("main").ExecuteScript();
 
 			Managers.entityManager.OnLoad();
-			InitializeEntities();
 			Managers.inputHandler.Initialize();
-		}
-
-		private void InitializeEntities()
-		{
-			Console.WriteLine("InitializeEntities called");
-
-			var cameraEntity = Managers.entityManager.CreateEntity();
-			var cameraComponent = new CameraComponent();
-			var transformComponent = new TransformComponent
-			{
-				Position = new Vector3D<float>(0.0f, 0.0f, 3.0f),
-				Rotation = new Vector3D<float>(0.0f),
-				Scale = new Vector3D<float>(1.0f)
-			};
-
-			cameraComponent.InitInput(transformComponent);
-			Managers.inputHandler.inputStates.Add(cameraComponent.editor_state);
-
-			Managers.entityManager.AddComponent(cameraEntity, cameraComponent);
-			Managers.entityManager.AddComponent(cameraEntity, transformComponent);
-
-			Managers.resourceManager.Import_Shader(
-				"standardShader",
-				Utils.FromAssets("./Shaders/vertex.glsl"),
-				Utils.FromAssets("./Shaders/fragment.glsl")
-			);
-			Managers.resourceManager.Import_Texture("minecraft_dirt", Utils.FromAssets("./minecraft_dirt.png"));
-
-			int location = window.GLContext.GetUniformLocation(Managers.resourceManager.Get_Shader("standardShader").ShaderProgramId, "texture1");
-			window.GLContext.Uniform1(location, Managers.resourceManager.Get_Texture("minecraft_dirt").Id);
-
-			Managers.meshSystem.BindMesh(Managers.resourceManager.models["testMesh"]);
-
-			Console.WriteLine("Mesh bound");
 		}
 
 		private void OnRender(double deltaTime)

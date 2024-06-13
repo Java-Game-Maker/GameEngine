@@ -20,6 +20,7 @@ namespace GameEngine
 		private readonly GL gl;
 
 		private readonly Dictionary<string, ScriptLuaComponent> scripts = new Dictionary<string, ScriptLuaComponent>();
+		private readonly Dictionary<string, ScriptPythonComponent> pyScripts = new Dictionary<string, ScriptPythonComponent>();
 		public readonly Dictionary<string, MeshComponent> models = new Dictionary<string, MeshComponent>();
 		public readonly Dictionary<string, Texture> textures = new Dictionary<string, Texture>();
 		private readonly Dictionary<string, ShaderComponent> shaders = new Dictionary<string, ShaderComponent>();
@@ -28,6 +29,20 @@ namespace GameEngine
 		{
 			gl = _gl;
 		}
+
+		/* Import Scripts (Python) */
+		public void Import_PyScript(string name, string path)
+		{
+			var comp = new ScriptPythonComponent(path);
+			pyScripts.Add(name, comp);
+		}
+
+		public void Detach_PyScript(string name)
+		{
+			pyScripts.Remove(name);
+		}
+
+		public ScriptPythonComponent Get_PyScript(string name) => pyScripts[name];
 
 		/* Import Scripts (LUA) */
 		public void Import_Script(string name, string path)
