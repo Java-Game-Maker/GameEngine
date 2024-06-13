@@ -79,14 +79,19 @@ namespace GameEngine
 			entityManager.AddComponent(cameraEntity, cameraComponent);
 			entityManager.AddComponent(cameraEntity, transformComponent);
 
-			resourceManager.Import_Shader(shaderManager, "standardShader", "./Shaders/vertex.glsl", "./Shaders/fragment.glsl");
-			resourceManager.Import_Texture("minecraft_dirt", "./Assets/minecraft_dirt.png");
+			resourceManager.Import_Shader(
+				shaderManager, 
+				"standardShader", 
+				Utils.FromAssets("./Shaders/vertex.glsl"), 
+				Utils.FromAssets("./Shaders/fragment.glsl")
+			);
+			resourceManager.Import_Texture("minecraft_dirt", Utils.FromAssets("./minecraft_dirt.png"));
 
 			int location = window.GLContext.GetUniformLocation(resourceManager.Get_Shader("standardShader").ShaderProgramId, "texture1");
 			window.GLContext.Uniform1(location, resourceManager.Get_Texture("minecraft_dirt").Id);
 
-			GameObject go1 = new GameObject(resourceManager, entityManager, resourceManager.Get_Shader("standardShader"), "./cube.obj", "cube2");
-			GameObject go2 = new GameObject(resourceManager, entityManager, resourceManager.Get_Shader("standardShader"), "./cube.obj", "cube");
+			GameObject go1 = new GameObject(resourceManager, entityManager, resourceManager.Get_Shader("standardShader"), Utils.FromAssets("./Models/cube.obj"), "cube2");
+			GameObject go2 = new GameObject(resourceManager, entityManager, resourceManager.Get_Shader("standardShader"), Utils.FromAssets("./Models/cube.obj"), "cube");
 			go2.transformComponent.Position = new Vector3D<float>(3.0f, 0.0f, 0.0f);
 			go2.transformComponent.Scale = new Vector3D<float>(0.5f, 0.5f, 0.5f);
 
