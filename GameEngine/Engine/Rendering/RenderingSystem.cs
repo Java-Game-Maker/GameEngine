@@ -7,22 +7,16 @@ namespace GameEngine
 	public class RenderingSystem : EntitySystem
 	{
 		private GL gl;
-		private ShaderManager shaderManager;
-		private CameraSystem cameraSystem;
-		private MeshSystem meshSystem;
 
-		public RenderingSystem(GL gl, ShaderManager _shaderManager, CameraSystem _cameraSystem, MeshSystem _meshSystem)
+		public RenderingSystem(GL gl)
 		{
 			this.gl = gl;
-			this.shaderManager = _shaderManager;
-			this.cameraSystem = _cameraSystem;
-			this.meshSystem = _meshSystem;
 		}
 
 		public override void Update(EntityManager entityManager)
 		{
-			var viewMatrix = cameraSystem.GetViewMatrix();
-			var projectionMatrix = cameraSystem.GetProjectionMatrix();
+			var viewMatrix = Managers.cameraSystem.GetViewMatrix();
+			var projectionMatrix = Managers.cameraSystem.GetProjectionMatrix();
 
 			var renderableEntities = entityManager.GetAllEntitiesWithComponent<MeshComponent>();
 
@@ -38,16 +32,10 @@ namespace GameEngine
 
 		public Vector3D<float> CalculateLightDirection(float timeOfDay)
 		{
-			// Normalize time of day to be between 0 and 1
 			float normalizedTime = timeOfDay / 24.0f;
-
-			// Calculate the azimuth angle (0 to 2 * PI)
 			float azimuthAngle = normalizedTime * MathF.PI * 2.0f;
-
-			// Calculate the elevation angle (e.g., sun rises and sets at the horizon)
 			float elevationAngle = MathF.PI / 4.0f * MathF.Sin(normalizedTime * MathF.PI);
 
-			// Convert spherical coordinates to Cartesian coordinates
 			float x = MathF.Cos(elevationAngle) * MathF.Cos(azimuthAngle);
 			float y = MathF.Sin(elevationAngle);
 			float z = MathF.Cos(elevationAngle) * MathF.Sin(azimuthAngle);

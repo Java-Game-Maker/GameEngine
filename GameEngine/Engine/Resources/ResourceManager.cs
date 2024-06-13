@@ -18,8 +18,6 @@ namespace GameEngine
 	public class ResourceManager
 	{
 		private readonly GL gl;
-		public EntityManager entityManager;
-		public ShaderManager shaderManager;
 
 		private readonly Dictionary<string, ScriptLuaComponent> scripts = new Dictionary<string, ScriptLuaComponent>();
 		public readonly Dictionary<string, MeshComponent> models = new Dictionary<string, MeshComponent>();
@@ -34,7 +32,7 @@ namespace GameEngine
 		/* Import Scripts (LUA) */
 		public void Import_Script(string name, string path)
 		{
-			var comp = new ScriptLuaComponent(entityManager, this, shaderManager, path);
+			var comp = new ScriptLuaComponent(path);
 			scripts.Add(name, comp);
 		}
 
@@ -137,14 +135,14 @@ namespace GameEngine
 
 		/* Import Shader */
 
-		public void Import_Shader(ShaderManager shaderManager, string name, string vertexPath, string fragmentPath)
+		public void Import_Shader(string name, string vertexPath, string fragmentPath)
 		{
 			if(!shaders.ContainsKey(name))
 			{
 				string vertexShader = File.ReadAllText(vertexPath);
 				string fragmentShader = File.ReadAllText(fragmentPath);
 
-				uint shaderProgram = shaderManager.CreateShaderProgram(vertexShader, fragmentShader);
+				uint shaderProgram = Managers.shaderManager.CreateShaderProgram(vertexShader, fragmentShader);
 				shaders.Add(name, new ShaderComponent(shaderProgram));
 			}else{Console.WriteLine($"Failed to import shader. Name: {name}, is already booked by another shader.");}
 		}

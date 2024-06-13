@@ -7,26 +7,23 @@ namespace GameEngine
 	public class GameObject
 	{
 		public Entity entity;
-		public MeshComponent meshComponent;
-		public ShaderComponent shaderComponent;
-		public TransformComponent transformComponent;
 
-		public GameObject(ResourceManager resourceManager, EntityManager entityManager, ShaderComponent _shaderComponent, string meshPath, string meshName)
+		public GameObject(string meshPath, string meshName)
 		{
-			resourceManager.Import_Model(meshName, meshPath);
+			Managers.resourceManager.Import_Model(meshName, meshPath);
 
-			entity = entityManager.CreateEntity();
-			meshComponent = resourceManager.Get_Model(meshName);
-			shaderComponent = _shaderComponent;
-			transformComponent = new TransformComponent{
+			entity = Managers.entityManager.CreateEntity();
+			var meshComponent = Managers.resourceManager.Get_Model(meshName);
+			var shaderComponent = Managers.resourceManager.Get_Shader("standardShader");;
+			var transformComponent = new TransformComponent{
 				Position = new Vector3D<float>(-5.0f, 0.0f, 0.0f),
 				Rotation = new Vector3D<float>(0.0f, 0.0f, 0.0f),
 				Scale = new Vector3D<float>(1.0f, 1.0f, 1.0f)
 			};
 
-			entityManager.AddComponent(entity, meshComponent);
-			entityManager.AddComponent(entity, shaderComponent);
-			entityManager.AddComponent(entity, transformComponent);
+			Managers.entityManager.AddComponent(entity, meshComponent);
+			Managers.entityManager.AddComponent(entity, shaderComponent);
+			Managers.entityManager.AddComponent(entity, transformComponent);
 		}
 	}
 }

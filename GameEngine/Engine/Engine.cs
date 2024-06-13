@@ -12,13 +12,6 @@ namespace GameEngine
 
 		private EntityManager entityManager;
 		private List<EntitySystem> systems;
-		private ShaderManager shaderManager;
-		private CameraSystem cameraSystem;
-		private MeshSystem meshSystem;
-		private RenderingSystem renderingSystem;
-		private ResourceManager resourceManager;
-
-		public InputHandler inputHandler;
 
 		public Engine()
 		{
@@ -42,37 +35,35 @@ namespace GameEngine
 			gl.Enable(GLEnum.DepthTest);
 			gl.DepthFunc(GLEnum.Less);
 
-			shaderManager = new ShaderManager(gl);
-			entityManager = new EntityManager();
-			cameraSystem = new CameraSystem();
-			meshSystem = new MeshSystem(gl);
-			renderingSystem = new RenderingSystem(gl, shaderManager, cameraSystem, meshSystem);
-			resourceManager = new ResourceManager(gl);
-			resourceManager.entityManager = entityManager;
-			resourceManager.shaderManager = shaderManager;
+			Managers.shaderManager = new ShaderManager(gl);
+			Managers.entityManager = new EntityManager();
+			Managers.cameraSystem = new CameraSystem();
+			Managers.meshSystem = new MeshSystem(gl);
+			Managers.renderingSystem = new RenderingSystem(gl);
+			Managers.resourceManager = new ResourceManager(gl);
 
 			systems = new List<EntitySystem> {
-				cameraSystem,
-				meshSystem,
-				renderingSystem
+				Managers.cameraSystem,
+				Managers.meshSystem,
+				Managers.renderingSystem
 			};
 
-			inputHandler = new InputHandler(window.inputContext);
+			Managers.inputHandler = new InputHandler(window.inputContext);
 			
-			var scriptEntity = entityManager.CreateEntity();
-			resourceManager.Import_Script("test", Utils.FromAssets("./Scripts/Camera.lua"));
-			entityManager.AddComponent(scriptEntity, resourceManager.Get_Script("test"));
+			var scriptEntity = Managers.entityManager.CreateEntity();
+			Managers.resourceManager.Import_Script("test", Utils.FromAssets("./Scripts/Camera.lua"));
+			Managers.entityManager.AddComponent(scriptEntity, Managers.resourceManager.Get_Script("test"));
 
-			entityManager.OnLoad();
+			Managers.entityManager.OnLoad();
 			InitializeEntities();
-			inputHandler.Initialize();
+			Managers.inputHandler.Initialize();
 		}
 
 		private void InitializeEntities()
 		{
 			Console.WriteLine("InitializeEntities called");
 
-			var cameraEntity = entityManager.CreateEntity();
+			var cameraEntity = Managers.entityManager.CreateEntity();
 			var cameraComponent = new CameraComponent();
 			var transformComponent = new TransformComponent
 			{
@@ -82,31 +73,22 @@ namespace GameEngine
 			};
 
 			cameraComponent.InitInput(transformComponent);
-			inputHandler.inputStates.Add(cameraComponent.editor_state);
+			Managers.inputHandler.inputStates.Add(cameraComponent.editor_state);
 
-			entityManager.AddComponent(cameraEntity, cameraComponent);
-			entityManager.AddComponent(cameraEntity, transformComponent);
+			Managers.entityManager.AddComponent(cameraEntity, cameraComponent);
+			Managers.entityManager.AddComponent(cameraEntity, transformComponent);
 
-			resourceManager.Import_Shader(
-				shaderManager,
+			Managers.resourceManager.Import_Shader(
 				"standardShader",
 				Utils.FromAssets("./Shaders/vertex.glsl"),
 				Utils.FromAssets("./Shaders/fragment.glsl")
 			);
-			resourceManager.Import_Texture("minecraft_dirt", Utils.FromAssets("./minecraft_dirt.png"));
+			Managers.resourceManager.Import_Texture("minecraft_dirt", Utils.FromAssets("./minecraft_dirt.png"));
 
-			int location = window.GLContext.GetUniformLocation(resourceManager.Get_Shader("standardShader").ShaderProgramId, "texture1");
-			window.GLContext.Uniform1(location, resourceManager.Get_Texture("minecraft_dirt").Id);
-
-			/* var stdShader = resourceManager.Get_Shader("standardShader");
-			GameObject go1 = new GameObject(resourceManager, entityManager, stdShader, Utils.FromAssets("./Models/cube.obj"), "cube");
-			GameObject go2 = new GameObject(resourceManager, entityManager, stdShader, Utils.FromAssets("./Models/cube.obj"), "cube2");
-			go2.transformComponent.Position = new Vector3D<float>(3.0f, 0.0f, 0.0f);
-			go2.transformComponent.Scale = new Vector3D<float>(0.5f, 0.5f, 0.5f);
-
-			meshSystem.BindMesh(go1.meshComponent);
-			meshSystem.BindMesh(go2.meshComponent); */
-			meshSystem.BindMesh(resourceManager.models["testMesh"]);
+			int location = window.GLContext.GetUniformLocation(Managers.resourceManager.Get_Shader("standardShader").ShaderProgramId, "texture1");
+			window.GLContext.Uniform1(location, Managers.resourceManager.Get_Texture("minecraft_dirt").Id);
+			
+			Managers.meshSystem.BindMesh(Managers.resourceManager.models["testMesh"]);
 
 			Console.WriteLine("Mesh bound");
 		}
@@ -123,7 +105,7 @@ namespace GameEngine
 			{
 				if (system is RenderingSystem renderingSystem)
 				{
-					renderingSystem.Update(entityManager);
+					renderingSystem.Update(Managers.entityManager);
 				}
 			}
 
@@ -149,17 +131,17 @@ namespace GameEngine
 			{
 				if (!(system is RenderingSystem))
 				{
-					system.Update(entityManager);
+					system.Update(Managers.entityManager);
 				}
 			}
 
-			entityManager.Update();
-			inputHandler.Update();
+			Managers.entityManager.Update();
+			Managers.inputHandler.Update();
 		}
 
 		private void OnClosing()
 		{
-			resourceManager.Detach_All();
+			Managers.resourceManager.Detach_All();
 		}
 
 		public void Run()

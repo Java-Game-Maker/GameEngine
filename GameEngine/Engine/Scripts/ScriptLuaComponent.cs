@@ -12,20 +12,13 @@ namespace GameEngine
 		private Lua _lua;
 		private List<LuaFunction> _onLoadFunctions;
 		private List<LuaFunction> _onUpdateFunctions;
-		private EntityManager _entityManager;
-		private ResourceManager _resourceManager;
-		private ShaderManager _shaderManager;
 
-		public ScriptLuaComponent(EntityManager entityManager, ResourceManager resourceManager, ShaderManager shaderManager, string path)
+		public ScriptLuaComponent(string path)
 		{
 			_lua = new Lua();
 			
 			_onLoadFunctions = new List<LuaFunction>();
 			_onUpdateFunctions = new List<LuaFunction>();
-			
-			_entityManager = entityManager;
-			_resourceManager = resourceManager;
-			_shaderManager = shaderManager;
 
 			RegisterFunctions();
 			LoadStandardLibrary();
@@ -35,7 +28,7 @@ namespace GameEngine
 
 		private void RegisterFunctions()
 		{
-			_lua["entityManager"] = _entityManager;
+			_lua["entityManager"] = Managers.entityManager;
 			_lua["DeltaTime"] = (float)Time.DeltaTime;
 			_lua.RegisterFunction("registerOnLoad", this, GetType().GetMethod("RegisterOnLoad"));
 			_lua.RegisterFunction("registerUpdate", this, GetType().GetMethod("RegisterUpdate"));
@@ -48,7 +41,7 @@ namespace GameEngine
 		public void UpdateTransform(int _id, float x, float y, float z)
 		{
 			var entity = new Entity{ Id = _id };
-			var transform = _entityManager.GetComponent<TransformComponent>(entity);
+			var transform = Managers.entityManager.GetComponent<TransformComponent>(entity);
 			transform.Position = new Vector3D<float>(x, y, z);
 		}
 
@@ -97,7 +90,7 @@ namespace GameEngine
 
 		public int CreateEntity()
 		{
-			var entity = _entityManager.CreateEntity();
+			var entity = Managers.entityManager.CreateEntity();
 			return entity.Id;
 		}
 
@@ -108,26 +101,25 @@ namespace GameEngine
 			switch(componentType)
 			{
 				case "Camera": 
-					_entityManager.AddComponent(entity, new CameraComponent());
+					Managers.entityManager.AddComponent(entity, new CameraComponent());
 					break;
 				case "Mesh":
-					_resourceManager.Import_Model(
+					Managers.resourceManager.Import_Model(
 						parameters["name"].ToString(),
 						Utils.FromAssets(parameters["path"].ToString())
 					);
-					_entityManager.AddComponent(entity, _resourceManager.Get_Model(parameters["name"].ToString()));
+					Managers.entityManager.AddComponent(entity, Managers.resourceManager.Get_Model(parameters["name"].ToString()));
 					break;
 				case "Shader":
-					_resourceManager.Import_Shader(
-						_shaderManager,
+					Managers.resourceManager.Import_Shader(
 						parameters["name"].ToString(),
 						Utils.FromAssets(parameters["vertPath"].ToString()),
 						Utils.FromAssets(parameters["fragPath"].ToString())
 					);
-					_entityManager.AddComponent(entity, _resourceManager.Get_Shader(parameters["name"].ToString()));
+					Managers.entityManager.AddComponent(entity, Managers.resourceManager.Get_Shader(parameters["name"].ToString()));
 					break;
 				case "Transform":
-					_entityManager.AddComponent(entity, new TransformComponent
+					Managers.entityManager.AddComponent(entity, new TransformComponent
 					{
 						Position = new Vector3D<float>(0, 5, 0),
 						Rotation = new Vector3D<float>(0.0f),
