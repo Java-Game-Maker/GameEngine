@@ -9,8 +9,6 @@ namespace GameEngine
 	public class Engine
 	{
 		private Window window;
-
-		private EntityManager entityManager;
 		private List<EntitySystem> systems;
 
 		public Engine()
@@ -87,7 +85,7 @@ namespace GameEngine
 
 			int location = window.GLContext.GetUniformLocation(Managers.resourceManager.Get_Shader("standardShader").ShaderProgramId, "texture1");
 			window.GLContext.Uniform1(location, Managers.resourceManager.Get_Texture("minecraft_dirt").Id);
-			
+
 			Managers.meshSystem.BindMesh(Managers.resourceManager.models["testMesh"]);
 
 			Console.WriteLine("Mesh bound");
