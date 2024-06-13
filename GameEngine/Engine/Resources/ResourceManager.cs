@@ -18,7 +18,10 @@ namespace GameEngine
 	public class ResourceManager
 	{
 		private readonly GL gl;
+		public EntityManager entityManager;
+		public ShaderManager shaderManager;
 
+		private readonly Dictionary<string, ScriptLuaComponent> scripts = new Dictionary<string, ScriptLuaComponent>();
 		public readonly Dictionary<string, MeshComponent> models = new Dictionary<string, MeshComponent>();
 		public readonly Dictionary<string, Texture> textures = new Dictionary<string, Texture>();
 		private readonly Dictionary<string, ShaderComponent> shaders = new Dictionary<string, ShaderComponent>();
@@ -27,6 +30,20 @@ namespace GameEngine
 		{
 			gl = _gl;
 		}
+
+		/* Import Scripts (LUA) */
+		public void Import_Script(string name, string path)
+		{
+			var comp = new ScriptLuaComponent(entityManager, this, shaderManager, path);
+			scripts.Add(name, comp);
+		}
+
+		public void Detach_Script(string name)
+		{
+			scripts.Remove(name);
+		}
+
+		public ScriptLuaComponent Get_Script(string name) => scripts[name];
 
 		/* Import Texture */
 

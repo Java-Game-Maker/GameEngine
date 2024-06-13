@@ -48,6 +48,8 @@ namespace GameEngine
 			meshSystem = new MeshSystem(gl);
 			renderingSystem = new RenderingSystem(gl, shaderManager, cameraSystem, meshSystem);
 			resourceManager = new ResourceManager(gl);
+			resourceManager.entityManager = entityManager;
+			resourceManager.shaderManager = shaderManager;
 
 			systems = new List<EntitySystem> {
 				cameraSystem,
@@ -56,6 +58,12 @@ namespace GameEngine
 			};
 
 			inputHandler = new InputHandler(window.inputContext);
+			
+			var scriptEntity = entityManager.CreateEntity();
+			resourceManager.Import_Script("test", Utils.FromAssets("./Scripts/Camera.lua"));
+			entityManager.AddComponent(scriptEntity, resourceManager.Get_Script("test"));
+
+			entityManager.OnLoad();
 			InitializeEntities();
 			inputHandler.Initialize();
 		}
@@ -80,9 +88,9 @@ namespace GameEngine
 			entityManager.AddComponent(cameraEntity, transformComponent);
 
 			resourceManager.Import_Shader(
-				shaderManager, 
-				"standardShader", 
-				Utils.FromAssets("./Shaders/vertex.glsl"), 
+				shaderManager,
+				"standardShader",
+				Utils.FromAssets("./Shaders/vertex.glsl"),
 				Utils.FromAssets("./Shaders/fragment.glsl")
 			);
 			resourceManager.Import_Texture("minecraft_dirt", Utils.FromAssets("./minecraft_dirt.png"));
@@ -90,13 +98,15 @@ namespace GameEngine
 			int location = window.GLContext.GetUniformLocation(resourceManager.Get_Shader("standardShader").ShaderProgramId, "texture1");
 			window.GLContext.Uniform1(location, resourceManager.Get_Texture("minecraft_dirt").Id);
 
-			GameObject go1 = new GameObject(resourceManager, entityManager, resourceManager.Get_Shader("standardShader"), Utils.FromAssets("./Models/cube.obj"), "cube2");
-			GameObject go2 = new GameObject(resourceManager, entityManager, resourceManager.Get_Shader("standardShader"), Utils.FromAssets("./Models/cube.obj"), "cube");
+			/* var stdShader = resourceManager.Get_Shader("standardShader");
+			GameObject go1 = new GameObject(resourceManager, entityManager, stdShader, Utils.FromAssets("./Models/cube.obj"), "cube");
+			GameObject go2 = new GameObject(resourceManager, entityManager, stdShader, Utils.FromAssets("./Models/cube.obj"), "cube2");
 			go2.transformComponent.Position = new Vector3D<float>(3.0f, 0.0f, 0.0f);
 			go2.transformComponent.Scale = new Vector3D<float>(0.5f, 0.5f, 0.5f);
 
 			meshSystem.BindMesh(go1.meshComponent);
-			meshSystem.BindMesh(go2.meshComponent);
+			meshSystem.BindMesh(go2.meshComponent); */
+			meshSystem.BindMesh(resourceManager.models["testMesh"]);
 
 			Console.WriteLine("Mesh bound");
 		}
@@ -143,6 +153,7 @@ namespace GameEngine
 				}
 			}
 
+			entityManager.Update();
 			inputHandler.Update();
 		}
 

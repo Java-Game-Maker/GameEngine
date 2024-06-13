@@ -58,5 +58,25 @@ namespace GameEngine
 			}
 			return entities;
 		}
+
+		public void OnLoad()
+		{
+			List<Entity> luaComponents = GetAllEntitiesWithComponent<ScriptLuaComponent>();
+			foreach (var luaComp in luaComponents)
+			{
+				ScriptLuaComponent scl = GetComponent<ScriptLuaComponent>(luaComp);
+				scl.OnLoad();
+			}
+		}
+
+		public void Update()
+		{
+			List<Entity> luaComponents = GetAllEntitiesWithComponent<ScriptLuaComponent>();
+			foreach (var luaComp in luaComponents)
+			{
+				ScriptLuaComponent scl = GetComponent<ScriptLuaComponent>(luaComp);
+				scl.Update();
+			}
+		}
 	}
 }
