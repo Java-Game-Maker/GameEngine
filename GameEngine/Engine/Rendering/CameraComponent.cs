@@ -33,6 +33,7 @@ namespace GameEngine
             editor_state.Bind_OnKeyHeld.Add(Key.D, () => { transformComponent.Position += Right * velocity(Time.DeltaTime); });
             editor_state.Bind_OnKeyHeld.Add(Key.ShiftLeft, () => { transformComponent.Position -= Up * velocity(Time.DeltaTime); });
             editor_state.Bind_OnKeyHeld.Add(Key.Space, () => { transformComponent.Position += Up * velocity(Time.DeltaTime); });
+            editor_state.Bind_OnKeyHeld.Add(Key.ControlLeft, () => { Speed = (Speed == 2.5f) ? 10 : 2.5f; });
 
             editor_state.Bind_OnMouseMove = (xOffset, yOffset) =>
             {
