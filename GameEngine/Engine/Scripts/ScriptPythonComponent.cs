@@ -24,7 +24,7 @@ namespace GameEngine
 			_scope = _engine.CreateScope();
 
 			var paths = _engine.GetSearchPaths();
-			paths.Add("T:\\githubRepos\\GameEngine\\GameEngine\\Assets\\PyScripts\\");
+			paths.Add(Utils.FromAssets("./PyScripts/"));
 			_engine.SetSearchPaths(paths);
 			foreach (var item in paths)
 			{
