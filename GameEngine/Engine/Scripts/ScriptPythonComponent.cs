@@ -2,6 +2,7 @@
 using System;
 using IronPython;
 using IronPython.Hosting;
+using IronPython.Runtime.Operations;
 using IronPython.Runtime.Types;
 using Microsoft.Scripting.Hosting;
 
@@ -22,11 +23,20 @@ namespace GameEngine
 			_engine = Python.CreateEngine();
 			_scope = _engine.CreateScope();
 
+			var paths = _engine.GetSearchPaths();
+			paths.Add("T:\\githubRepos\\GameEngine\\GameEngine\\Assets\\PyScripts\\");
+			_engine.SetSearchPaths(paths);
+			foreach (var item in paths)
+			{
+				Console.WriteLine(item);
+			}
+
 			_scope.SetVariable("Managers", DynamicHelpers.GetPythonTypeFromType(typeof(Managers)));
 			_scope.SetVariable("GameObject", DynamicHelpers.GetPythonTypeFromType(typeof(GameObject)));
 			_scope.SetVariable("CameraComponent", DynamicHelpers.GetPythonTypeFromType(typeof(CameraComponent)));
 			_scope.SetVariable("TransformComponent", DynamicHelpers.GetPythonTypeFromType(typeof(TransformComponent)));
 			_scope.SetVariable("Utils", DynamicHelpers.GetPythonTypeFromType(typeof(Utils)));
+			_scope.SetVariable("Time", DynamicHelpers.GetPythonTypeFromType(typeof(Time)));
 		}
 
 		public void ExecuteScript()
@@ -42,6 +52,7 @@ namespace GameEngine
 			catch (System.Exception ex)
 			{
 				Console.WriteLine($"Script executed failed: {ex.Message}");
+				Console.WriteLine(ex.StackTrace);
 			}
 		}
 

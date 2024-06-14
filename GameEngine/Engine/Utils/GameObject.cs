@@ -19,7 +19,7 @@ namespace GameEngine
 			meshComponent = Managers.resourceManager.Get_Model(meshName);
 			shaderComponent = Managers.resourceManager.Get_Shader("standardShader");
 			transformComponent = new TransformComponent{
-				Position = new Vector3D<float>(-5.0f, 0.0f, 0.0f),
+				Position = new Vector3D<float>(0.0f, 0.0f, 0.0f),
 				Rotation = new Vector3D<float>(0.0f, 0.0f, 0.0f),
 				Scale = new Vector3D<float>(1.0f, 1.0f, 1.0f)
 			};
@@ -32,6 +32,11 @@ namespace GameEngine
 		public void Translate(float x, float y, float z)
 		{
 			transformComponent.Position += new Vector3D<float>(x,y,z);
+		}
+
+		public void SetPosition(float x, float y, float z)
+		{
+			transformComponent.Position = new Vector3D<float>(x, y, z);
 		}
 	}
 }

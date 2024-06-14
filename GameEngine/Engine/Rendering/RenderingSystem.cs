@@ -7,6 +7,7 @@ namespace GameEngine
 	public class RenderingSystem : EntitySystem
 	{
 		private GL gl;
+		public float world_time = 16;
 
 		public RenderingSystem(GL gl)
 		{
@@ -72,7 +73,7 @@ namespace GameEngine
 			Matrix4X4<float> modelMatrix = CalculateModelMatrix(transform);
 			gl.UniformMatrix4(modelLocation, 1, false, modelMatrix.ToFloatArray());
 
-			var lightDir = CalculateLightDirection((float)(16));
+			var lightDir = CalculateLightDirection(world_time);
 			var viewPos = new Vector3D<float>(0.0f, 0.0f, 3.0f);
 			var lightColor = new Vector3D<float>(1.0f, 1.0f, 1.0f);
 			var objectColor = new Vector3D<float>(1.0f, 0.5f, 0.31f);

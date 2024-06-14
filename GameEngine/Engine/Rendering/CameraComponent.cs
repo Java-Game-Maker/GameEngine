@@ -10,6 +10,8 @@ namespace GameEngine
         public Vector3D<float> Right { get; set; } = new Vector3D<float>(1.0f, 0.0f, 0.0f);
         public Vector3D<float> WorldUp { get; set; } = new Vector3D<float>(0.0f, 1.0f, 0.0f);
         public float Speed { get; set; } = 2.5f;
+        public float walkSpeed { get; set; } = 2.5f;
+        public float runSpeed { get; set; } = 2.5f;
         public float Sensitivity { get; set; } = 0.1f; // Adjust sensitivity to a reasonable value
         public float Zoom { get; set; } = 45.0f;
 
@@ -31,8 +33,18 @@ namespace GameEngine
             editor_state.Bind_OnKeyHeld.Add(Key.S, () => { transformComponent.Position -= Front * velocity(Time.DeltaTime); });
             editor_state.Bind_OnKeyHeld.Add(Key.A, () => { transformComponent.Position -= Right * velocity(Time.DeltaTime); });
             editor_state.Bind_OnKeyHeld.Add(Key.D, () => { transformComponent.Position += Right * velocity(Time.DeltaTime); });
-            editor_state.Bind_OnKeyHeld.Add(Key.ShiftLeft, () => { transformComponent.Position -= Up * velocity(Time.DeltaTime); });
-            editor_state.Bind_OnKeyHeld.Add(Key.Space, () => { transformComponent.Position += Up * velocity(Time.DeltaTime); });
+            /* editor_state.Bind_OnKeyHeld.Add(Key.ShiftLeft, () => { transformComponent.Position -= Up * velocity(Time.DeltaTime); });
+            editor_state.Bind_OnKeyHeld.Add(Key.Space, () => { transformComponent.Position += Up * velocity(Time.DeltaTime); }); */
+            editor_state.Bind_OnKeyDown.Add(Key.Space, () => { 
+                for(int i = 0; i < 20; i++){
+                    transformComponent.Position += Up * velocity(Time.DeltaTime);
+                }
+            });
+            editor_state.Bind_OnKeyHeld.Add(Key.ShiftLeft, () => { Speed = (Speed == walkSpeed) ? runSpeed : walkSpeed; });
+
+            editor_state.Bind_OnKeyDown.Add(Key.Number1, () => {Managers.renderingSystem.world_time -= 1;});
+            editor_state.Bind_OnKeyDown.Add(Key.Number2, () => {Managers.renderingSystem.world_time += 1;});
+
             editor_state.Bind_OnKeyHeld.Add(Key.ControlLeft, () => { Speed = (Speed == 2.5f) ? 10 : 2.5f; });
 
             editor_state.Bind_OnMouseMove = (xOffset, yOffset) =>
@@ -58,18 +70,13 @@ namespace GameEngine
 
                 // Recalculate Front vector directly from Yaw and Pitch
                 Vector3D<float> front;
-                front.X = MathF.Cos(float.DegreesToRadians(Yaw)) * MathF.Cos(float.DegreesToRadians(Pitch));
-                front.Y = MathF.Sin(float.DegreesToRadians(Pitch));
-                front.Z = MathF.Sin(float.DegreesToRadians(Yaw)) * MathF.Cos(float.DegreesToRadians(Pitch));
+                front.X = MathF.Cos(float.DegreesToRadians(Yaw)) * MathF.Cos(/* float.DegreesToRadians(Pitch) */0);
+                front.Y = MathF.Sin(/* float.DegreesToRadians(Pitch) */0);
+                front.Z = MathF.Sin(float.DegreesToRadians(Yaw)) * MathF.Cos(/* float.DegreesToRadians(Pitch) */0);
                 Front = Vector3D.Normalize(front);
 
                 Right = Vector3D.Normalize(Vector3D.Cross(Front, WorldUp));
                 Up = Vector3D.Normalize(Vector3D.Cross(Right, Front));
-
-                // Debug output
-                Console.WriteLine($"Mouse moved: xDiff={xDiff}, yDiff={yDiff}");
-                Console.WriteLine($"Updated Rotation: Pitch={Pitch}, Yaw={Yaw}");
-                Console.WriteLine($"Updated Front Vector: {Front}");
             };
         }
     }
