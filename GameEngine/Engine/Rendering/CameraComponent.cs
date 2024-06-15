@@ -13,7 +13,7 @@ namespace GameEngine
         public float walkSpeed { get; set; } = 2.5f;
         public float runSpeed { get; set; } = 2.5f;
         public float Sensitivity { get; set; } = 0.1f; // Adjust sensitivity to a reasonable value
-        public float Zoom { get; set; } = 45.0f;
+        public float Zoom { get; set; } = 90.0f;
 
         public InputState editor_state { get; set; }
 
@@ -33,14 +33,8 @@ namespace GameEngine
             editor_state.Bind_OnKeyHeld.Add(Key.S, () => { transformComponent.Position -= Front * velocity(Time.DeltaTime); });
             editor_state.Bind_OnKeyHeld.Add(Key.A, () => { transformComponent.Position -= Right * velocity(Time.DeltaTime); });
             editor_state.Bind_OnKeyHeld.Add(Key.D, () => { transformComponent.Position += Right * velocity(Time.DeltaTime); });
-            /* editor_state.Bind_OnKeyHeld.Add(Key.ShiftLeft, () => { transformComponent.Position -= Up * velocity(Time.DeltaTime); });
-            editor_state.Bind_OnKeyHeld.Add(Key.Space, () => { transformComponent.Position += Up * velocity(Time.DeltaTime); }); */
-            editor_state.Bind_OnKeyDown.Add(Key.Space, () => { 
-                for(int i = 0; i < 20; i++){
-                    transformComponent.Position += Up * velocity(Time.DeltaTime);
-                }
-            });
-            editor_state.Bind_OnKeyHeld.Add(Key.ShiftLeft, () => { Speed = (Speed == walkSpeed) ? runSpeed : walkSpeed; });
+            editor_state.Bind_OnKeyHeld.Add(Key.ShiftLeft, () => { transformComponent.Position -= Up * velocity(Time.DeltaTime); });
+            editor_state.Bind_OnKeyHeld.Add(Key.Space, () => { transformComponent.Position += Up * velocity(Time.DeltaTime); });
 
             editor_state.Bind_OnKeyDown.Add(Key.Number1, () => {Managers.renderingSystem.world_time -= 1;});
             editor_state.Bind_OnKeyDown.Add(Key.Number2, () => {Managers.renderingSystem.world_time += 1;});

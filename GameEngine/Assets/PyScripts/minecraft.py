@@ -1,12 +1,8 @@
-""" from Main import expose_globals
-expose_globals(globals()) """
-
 from Player import Player
 from perlin_noise import PerlinNoise
 
 class Minecraft:
 	def __init__(self, _g):
-		print("HERE BABY")
 		self.globals = _g
 		self.player = Player(_g)
 
@@ -16,20 +12,12 @@ class Minecraft:
 
 		self.define_shader()
 
-		self.chunk_x = 16
-		self.chunk_y = 10
-		self.chunk_z = 16
+		self.chunk_x = 32
+		self.chunk_y = 12
+		self.chunk_z = 32
 		self.noise = PerlinNoise()
 
 		self.gen_map()
-	
-	def expose_globals(self):
-		self.Time = self.globals["Time"]
-		self.Managers = self.globals["Managers"]
-		self.TransformComponent = self.globals["TransformComponent"]
-		self.CameraComponent = self.globals["CameraComponent"]
-		self.GameObject = self.globals["GameObject"]
-		self.Utils = self.globals["Utils"]
 
 	def define_shader(self):
 		self.globals["Managers"].resourceManager.Import_Shader(
@@ -48,7 +36,6 @@ class Minecraft:
 				go = self.globals["GameObject"]("./Models/cube.obj", f"{x}_{z}")
 				go.SetPosition(x * 2, self.noise.noise((x * .5) / self.chunk_y, (z * .5) / self.chunk_y, 0) * 10, z * 2)
 				self.globals["Managers"].meshSystem.BindMesh(self.globals["Managers"].resourceManager.models[f"{x}_{z}"])
-				#((x * z)/100)
 	
 	def Update(self):
 		self.player.Update()
